@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Almighty — A prayer for every moment</title>
+  <meta name="description" content="Tell us what's on your heart. Almighty crafts a personal Christian prayer — grounded in faith, written just for you." />
+  <meta property="og:title" content="Almighty — A prayer for every moment" />
+  <meta property="og:description" content="AI-powered Christian prayer generation. Personal, warm, and grounded in faith." />
+  <meta property="og:url" content="https://edselgrca-ops.github.io/almighty" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home'); return false;">Almighty</a>
+  <div class="nav-links">
+    <a class="nav-link active" data-page="home" href="#">Home</a>
+    <a class="nav-link" data-page="gen" href="#">Pray</a>
+    <a class="nav-link" data-page="cat" href="#">Categories</a>
+    <a class="nav-link" data-page="saved" href="#">Saved</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-sign-in" id="navSignIn" onclick="signIn()">Sign in</button>
+    <div class="nav-avatar" id="navAvatar"></div>
+  </div>
+</nav>
+
+<!-- ── HOME PAGE ── -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <p class="hero-eyebrow">Christian prayer generation</p>
+    <h1>A prayer for <em>every</em> moment</h1>
+    <p>Tell us what's on your heart. Almighty crafts a personal prayer — grounded in faith, written just for you.</p>
+    <div class="hero-actions">
+      <button class="btn btn-dark" id="heroGenBtn">Generate a prayer →</button>
+      <button class="btn btn-ghost" id="heroCatBtn">Browse by topic</button>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-mark">✦</div>
+      <h3>Personal & specific</h3>
+      <p>Describe your exact situation and receive a prayer written for this moment — not a generic template.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-mark">◇</div>
+      <h3>Rooted in faith</h3>
+      <p>Every prayer is warm, honest, and grounded in the heart of Christian belief — no archaic language.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-mark">○</div>
+      <h3>Save & return</h3>
+      <p>Sign in with Google to save prayers that move you and revisit them whenever you need them.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRAY / GENERATOR PAGE ── -->
+<div class="page" id="page-gen">
+  <div class="gen-container">
+    <div class="page-header">
+      <h2>What's on your heart?</h2>
+      <p>Describe your intention, situation, or need — and we'll write a prayer for you.</p>
+    </div>
+
+    <div class="quick-chips">
+      <button class="chip" onclick="setTopic('Healing for a loved one who is sick')">Healing for a loved one</button>
+      <button class="chip" onclick="setTopic('Gratitude and thankfulness for God\'s blessings')">Gratitude</button>
+      <button class="chip" onclick="setTopic('Guidance and wisdom in making an important decision')">Guidance</button>
+      <button class="chip" onclick="setTopic('Strength and peace in a difficult season')">Strength</button>
+      <button class="chip" onclick="setTopic('Peace and rest for an anxious heart')">Peace</button>
+      <button class="chip" onclick="setTopic('Forgiveness — help me forgive and feel forgiven')">Forgiveness</button>
+      <button class="chip" onclick="setTopic('A morning prayer to start the day with God')">Morning prayer</button>
+    </div>
+
+    <div class="input-area">
+      <textarea
+        id="prayerTopic"
+        rows="4"
+        placeholder="e.g. I'm anxious about a big decision at work and need God's peace and clarity..."
+        maxlength="300"
+      ></textarea>
+    </div>
+
+    <div class="generate-row">
+      <span class="char-count" id="charCount">0 / 300</span>
+      <button class="btn btn-dark" id="generateBtn">Generate prayer ↗</button>
+    </div>
+
+    <div class="spinner" id="spinner">Writing your prayer</div>
+
+    <div class="prayer-result" id="prayerResult" style="display:none;">
+      <div class="prayer-result-header">
+        <span class="prayer-label">Your prayer</span>
+      </div>
+      <p class="prayer-text" id="prayerText"></p>
+      <div class="prayer-actions">
+        <button class="action-btn" id="copyBtn">Copy</button>
+        <button class="action-btn" id="saveBtn">Save prayer</button>
+        <button class="action-btn" id="regenerateBtn">Generate another</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CATEGORIES PAGE ── -->
+<div class="page" id="page-cat">
+  <div class="cat-container">
+    <div class="page-header">
+      <h2>Browse by category</h2>
+      <p>Choose a theme and we'll take you straight to the prayer generator.</p>
+    </div>
+
+    <div class="cat-grid">
+      <div class="cat-card" onclick="setTopic('Healing and health — for physical, emotional, or spiritual healing')">
+        <div class="cat-symbol">◎</div>
+        <div class="cat-name">Healing</div>
+        <div class="cat-sub">Body, mind & spirit</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Gratitude and praise to God for his goodness')">
+        <div class="cat-symbol">✦</div>
+        <div class="cat-name">Gratitude</div>
+        <div class="cat-sub">Counting your blessings</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Guidance and wisdom — help me make the right decision')">
+        <div class="cat-symbol">◇</div>
+        <div class="cat-name">Guidance</div>
+        <div class="cat-sub">Seeking God's direction</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Grief and loss — help me through mourning and sorrow')">
+        <div class="cat-symbol">○</div>
+        <div class="cat-name">Grief & loss</div>
+        <div class="cat-sub">In sorrow and mourning</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Strength and perseverance to keep going through hard times')">
+        <div class="cat-symbol">□</div>
+        <div class="cat-name">Strength</div>
+        <div class="cat-sub">When the road is hard</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Anxiety and worry — help me find peace and calm in God')">
+        <div class="cat-symbol">△</div>
+        <div class="cat-name">Anxiety</div>
+        <div class="cat-sub">Finding peace and calm</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Forgiveness — forgiving someone who hurt me, or feeling forgiven by God')">
+        <div class="cat-symbol">☽</div>
+        <div class="cat-name">Forgiveness</div>
+        <div class="cat-sub">Grace and reconciliation</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Praying for my family and loved ones')">
+        <div class="cat-symbol">⊕</div>
+        <div class="cat-name">Family</div>
+        <div class="cat-sub">Praying for loved ones</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('A morning prayer of dedication — starting the day with God')">
+        <div class="cat-symbol">☀</div>
+        <div class="cat-name">Morning prayer</div>
+        <div class="cat-sub">Starting the day with God</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('An evening prayer of rest and reflection before sleep')">
+        <div class="cat-symbol">☾</div>
+        <div class="cat-name">Evening prayer</div>
+        <div class="cat-sub">Rest and reflection</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Prayer for protection — God\'s hand of safety over me and my family')">
+        <div class="cat-symbol">◻</div>
+        <div class="cat-name">Protection</div>
+        <div class="cat-sub">God's hand of safety</div>
+      </div>
+      <div class="cat-card" onclick="setTopic('Prayer for faith and trust — help me believe and not doubt')">
+        <div class="cat-symbol">✧</div>
+        <div class="cat-name">Faith</div>
+        <div class="cat-sub">Belief in the unseen</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SAVED PAGE ── -->
+<div class="page" id="page-saved">
+  <div class="saved-container">
+    <div id="savedContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

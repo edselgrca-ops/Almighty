@@ -1,6 +1,5 @@
 // ─── CONFIG ───────────────────────────────────────────────
 const GOOGLE_CLIENT_ID = '979310332442-0t0lk766on6n5r4qqdmsci9riuqjo04v.apps.googleusercontent.com';
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
 
 // ─── STATE ────────────────────────────────────────────────
 let currentUser = null;
@@ -68,30 +67,15 @@ async function generatePrayer() {
   document.getElementById('generateBtn').disabled = true;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://almighty-proxy.edselgrca.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `Write a contemporary, heartfelt Christian prayer about: "${topic}".
-
-Requirements:
-- Personal, warm, conversational tone — not formal or archaic
-- First person (I / we)
-- 130–180 words
-- Begin directly with "Lord," or "Heavenly Father," or "Father God,"
-- End with "Amen."
-- No headings, no explanation — just the prayer text itself`
-        }]
-      })
+      body: JSON.stringify({ topic })
     });
 
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    const text = data.content.map(b => b.text || '').join('').trim();
+    if (data.error) throw new Error(data.error);
+    const text = data.text;
 
     document.getElementById('spinner').style.display = 'none';
     renderPrayer(text, topic);

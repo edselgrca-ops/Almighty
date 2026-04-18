@@ -12,24 +12,25 @@ export default {
 
     const { topic } = await request.json();
 
-    const prompt = `Write a contemporary, heartfelt Christian prayer about: "${topic}".
+    const prompt = `You are a Christian devotional writer. Given a prayer topic, return a JSON object with exactly these four fields:
 
-Requirements:
-- Personal, warm, conversational tone — not formal or archaic
-- First person (I / we)
-- 130–180 words
-- Begin directly with "Lord," or "Heavenly Father," or "Father God,"
-- End with "Amen."
-- No headings, no explanation — just the prayer text itself`;
+- "verseRef": a relevant Bible verse reference and translation, e.g. "Isaiah 26:3 (NIV)"
+- "verseText": the full text of that verse (quoted exactly)
+- "verseExplanation": 2–3 sentences explaining how this verse speaks to the topic
+- "prayer": a heartfelt, personal Christian prayer (130–180 words, first person, warm tone, begins with "Lord," or "Heavenly Father," or "Father God,", ends with "Amen.")
+
+Topic: "${topic}"
+
+Return only valid JSON — no markdown, no code fences, no extra text.`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 1000 }
+          generationConfig: { maxOutputTokens: 1200, responseMimeType: 'application/json' }
         })
       }
     );
@@ -42,9 +43,10 @@ Requirements:
       });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '{}';
+    const result = JSON.parse(raw);
 
-    return new Response(JSON.stringify({ text }), {
+    return new Response(JSON.stringify(result), {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',

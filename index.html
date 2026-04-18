@@ -96,6 +96,12 @@
     .saved-card-tag { display: inline-block; margin-top: 10px; font-size: 11px; padding: 3px 10px; border-radius: 99px; background: var(--bg-secondary); color: var(--text-tertiary); border: 0.5px solid var(--border); }
     .empty-state { text-align: center; padding: 52px 0; color: var(--text-tertiary); font-size: 14px; }
     .empty-state p { margin-top: 8px; font-size: 13px; font-weight: 300; }
+    .result-section { padding: 18px 24px; }
+    .result-section + .result-section { border-top: 0.5px solid var(--border); }
+    .result-section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: 12px; }
+    .verse-ref { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+    .verse-quote { font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--text); line-height: 1.75; padding-left: 14px; border-left: 2px solid var(--border-md); margin-bottom: 12px; }
+    .verse-explanation { font-size: 13px; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--bg); font-size: 13px; padding: 10px 20px; border-radius: var(--radius); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; pointer-events: none; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     @media (max-width: 600px) {
@@ -162,8 +168,16 @@
     </div>
     <div class="spinner" id="spinner">Writing your prayer</div>
     <div class="prayer-result" id="prayerResult" style="display:none;">
-      <div class="prayer-result-header"><span class="prayer-label">Your prayer</span></div>
-      <p class="prayer-text" id="prayerText"></p>
+      <div class="result-section">
+        <div class="result-section-label">A Bible verse</div>
+        <div class="verse-ref" id="verseRef"></div>
+        <div class="verse-quote" id="verseText"></div>
+        <div class="verse-explanation" id="verseExplanation"></div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Your prayer</div>
+        <p class="prayer-text" id="prayerText"></p>
+      </div>
       <div class="prayer-actions">
         <button class="action-btn" id="copyBtn">Copy</button>
         <button class="action-btn" id="saveBtn">Save prayer</button>
@@ -203,6 +217,7 @@
 const GOOGLE_CLIENT_ID = '979310332442-0t0lk766on6n5r4qqdmsci9riuqjo04v.apps.googleusercontent.com';
 let currentUser = null;
 let savedPrayers = [];
+let currentResult = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initGoogleAuth();
@@ -218,10 +233,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('generateBtn').addEventListener('click', generatePrayer);
   ta.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generatePrayer(); });
   document.getElementById('copyBtn').addEventListener('click', () => {
-    navigator.clipboard.writeText(document.getElementById('prayerText').textContent).then(() => showToast('Copied to clipboard'));
+    if (!currentResult) return;
+    const full = currentResult.verseRef + '\n"' + currentResult.verseText + '"\n\n' + currentResult.verseExplanation + '\n\n' + currentResult.prayer;
+    navigator.clipboard.writeText(full).then(() => showToast('Copied to clipboard'));
   });
   document.getElementById('saveBtn').addEventListener('click', () => {
-    savePrayer(document.getElementById('prayerText').textContent, document.getElementById('prayerTopic').value.trim());
+    if (!currentResult) return;
+    savePrayer(currentResult.prayer, document.getElementById('prayerTopic').value.trim());
   });
   document.getElementById('regenerateBtn').addEventListener('click', generatePrayer);
 });
@@ -257,9 +275,12 @@ async function generatePrayer() {
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    const text = data.text;
+    currentResult = data;
     document.getElementById('spinner').style.display = 'none';
-    document.getElementById('prayerText').textContent = text;
+    document.getElementById('verseRef').textContent = data.verseRef;
+    document.getElementById('verseText').textContent = data.verseText;
+    document.getElementById('verseExplanation').textContent = data.verseExplanation;
+    document.getElementById('prayerText').textContent = data.prayer;
     document.getElementById('prayerResult').style.display = 'block';
     document.getElementById('prayerResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (err) {
